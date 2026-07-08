@@ -1,2 +1,4 @@
-# No external dependencies required.
-# This project uses only Python's standard library.
+# Backend dependencies
+fastapi>=0.100.0
+uvicorn>=0.23.0
+python-multipart>=0.0.6

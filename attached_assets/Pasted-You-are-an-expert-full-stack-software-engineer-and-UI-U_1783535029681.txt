@@ -1,0 +1,371 @@
+You are an expert full-stack software engineer and UI/UX designer.
+
+I have an existing Python project called "Code Quality Analyzer". The backend logic already exists in Python and must NOT be rewritten. Your job is to transform it into a modern, production-ready web application while preserving and reusing the existing analyzer modules.
+
+=====================================================
+PROJECT OVERVIEW
+=====================================================
+
+The application analyzes Python projects and reports code quality metrics.
+
+Current analyzer modules:
+
+- scanner.py
+  Recursively scans a project directory and finds all Python (.py) files.
+
+- parser.py
+  Parses Python files using Python's Abstract Syntax Tree (AST).
+
+- long_function.py
+  Detects functions exceeding a configurable number of lines.
+
+- complexity.py
+  Calculates Cyclomatic Complexity.
+
+- maintainability.py
+  Calculates a maintainability score.
+
+- duplication.py
+  Detects duplicate functions.
+
+- report.py
+  Generates formatted analysis reports.
+
+The existing analyzer is fully functional and must remain the core engine.
+
+Do NOT rewrite these modules.
+
+Instead, build a complete website around them.
+
+=====================================================
+TECH STACK
+=====================================================
+
+Frontend
+
+- React
+- Tailwind CSS
+- TypeScript
+- Framer Motion
+- Recharts
+
+Backend
+
+- FastAPI (Python)
+
+Use REST APIs.
+
+=====================================================
+APPLICATION GOAL
+=====================================================
+
+The website should look like a modern developer tool.
+
+Design inspiration:
+
+- GitHub
+- VS Code
+- Linear
+- Vercel
+
+Avoid hacker themes, neon effects, or excessive animations.
+
+Use a professional dark theme.
+
+=====================================================
+COLOR PALETTE
+=====================================================
+
+Background:
+#0D1117
+
+Cards:
+#161B22
+
+Borders:
+#30363D
+
+Primary:
+#58A6FF
+
+Success:
+#3FB950
+
+Warning:
+#D29922
+
+Error:
+#F85149
+
+=====================================================
+WEBSITE PAGES
+=====================================================
+
+1. Home
+
+Include:
+
+Hero Section
+
+Project description
+
+Features
+
+How it Works
+
+Upload Area
+
+GitHub Repository URL
+
+Programming Language selector
+
+Analyze button
+
+Responsive design.
+
+-----------------------------------------------------
+
+2. Analysis Page
+
+Allow users to:
+
+Upload a ZIP file
+
+OR
+
+Paste a GitHub Repository URL
+
+Choose language.
+
+(Currently Python only.)
+
+Future languages:
+
+Python
+
+C++
+
+Java
+
+JavaScript
+
+Go
+
+Rust
+
+The UI should already support future expansion.
+
+-----------------------------------------------------
+
+3. Loading Screen
+
+Professional loading page.
+
+Animated progress bar.
+
+Status messages:
+
+Scanning Project...
+
+Parsing Files...
+
+Calculating Complexity...
+
+Calculating Maintainability...
+
+Detecting Duplicates...
+
+Generating Report...
+
+-----------------------------------------------------
+
+4. Results Dashboard
+
+Display:
+
+Overall Code Quality Score
+
+Cyclomatic Complexity
+
+Maintainability Score
+
+Duplicate Functions
+
+Long Functions
+
+Each metric should appear in its own animated card.
+
+=====================================================
+VISUALIZATIONS
+=====================================================
+
+Include:
+
+Bar Charts
+
+Pie Charts
+
+Progress Bars
+
+Cards
+
+Tables
+
+Expandable Function Details
+
+=====================================================
+FUNCTION DETAILS
+=====================================================
+
+Each detected function should display:
+
+File Name
+
+Function Name
+
+Complexity
+
+Maintainability
+
+Length
+
+Duplicate Status
+
+Recommendation placeholder
+
+=====================================================
+BACKEND API
+=====================================================
+
+Create FastAPI endpoints.
+
+Examples:
+
+POST /analyze
+
+GET /health
+
+GET /languages
+
+The backend should call my existing analyzer modules.
+
+Return JSON.
+
+Do not duplicate analysis logic.
+
+=====================================================
+REPORTS
+=====================================================
+
+Allow users to:
+
+Download HTML Report
+
+Download JSON Report
+
+Future support:
+
+PDF
+
+=====================================================
+RESPONSIVE DESIGN
+=====================================================
+
+Desktop
+
+Tablet
+
+Mobile
+
+=====================================================
+ANIMATIONS
+=====================================================
+
+Use Framer Motion.
+
+Subtle animations only.
+
+Smooth transitions.
+
+Hover effects.
+
+Loading animations.
+
+Card transitions.
+
+=====================================================
+COMPONENT STRUCTURE
+=====================================================
+
+Create reusable React components.
+
+Navbar
+
+Sidebar
+
+Cards
+
+Charts
+
+Tables
+
+Footer
+
+Loading Spinner
+
+Upload Component
+
+Repository Input
+
+Language Selector
+
+Analysis Results
+
+=====================================================
+PROJECT STRUCTURE
+=====================================================
+
+Keep the frontend and backend separated.
+
+Example:
+
+frontend/
+
+backend/
+
+analyzer/
+
+=====================================================
+IMPORTANT
+=====================================================
+
+Do NOT replace my Python analyzer.
+
+Reuse it.
+
+Treat it as the application's analysis engine.
+
+The website is only a visual layer over the analyzer.
+
+=====================================================
+FUTURE ROADMAP
+=====================================================
+
+Design the architecture so the following can be added later without major refactoring:
+
+- Multi-language analyzers
+- User authentication
+- Saved analysis history
+- AI-generated code improvement suggestions
+- GitHub OAuth
+- Team dashboards
+- PDF export
+- Cloud deployment
+
+=====================================================
+FINAL GOAL
+=====================================================
+
+Create a polished SaaS-quality application that feels like a professional code analysis platform rather than a college project.
+
+Focus on clean architecture, maintainability, reusable components, and excellent user experience.
