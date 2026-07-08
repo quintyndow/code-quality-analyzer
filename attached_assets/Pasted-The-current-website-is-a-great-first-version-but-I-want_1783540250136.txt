@@ -1,0 +1,370 @@
+The current website is a great first version, but I want to transform it into a professional SaaS-quality developer platform.
+
+IMPORTANT:
+- Do NOT regenerate the project.
+- Improve the existing project.
+- Preserve the current architecture.
+- Keep all existing pages and functionality.
+- Do NOT modify my Python analyzer logic.
+- Only improve the frontend and integrate it properly with the existing backend.
+
+==================================================
+GOAL
+==================================================
+
+Make the website feel like GitHub, Linear, Vercel and SonarQube combined.
+
+The application should feel like a professional developer tool that could be used by software engineers.
+
+==================================================
+DESIGN
+==================================================
+
+Improve spacing.
+
+Improve typography.
+
+Use GitHub Dark colors.
+
+Background:
+#0D1117
+
+Cards:
+#161B22
+
+Borders:
+#30363D
+
+Primary:
+#58A6FF
+
+Success:
+#3FB950
+
+Warning:
+#D29922
+
+Danger:
+#F85149
+
+Use Inter font.
+
+Rounded corners.
+
+Soft shadows.
+
+Glass effects only where appropriate.
+
+==================================================
+NAVIGATION
+==================================================
+
+Improve the navigation bar.
+
+Include:
+
+Logo
+
+Home
+
+Analyze
+
+Documentation
+
+About
+
+GitHub
+
+Dark mode toggle
+
+Make it sticky while scrolling.
+
+==================================================
+HERO SECTION
+==================================================
+
+Replace the hero with something more premium.
+
+Headline:
+
+Analyze.
+Understand.
+Improve.
+
+Subtitle:
+
+Upload a Python project or paste a GitHub repository URL to instantly receive code quality insights powered by Python AST analysis.
+
+Buttons
+
+Analyze Project
+
+View GitHub
+
+Add subtle animations.
+
+==================================================
+UPLOAD SECTION
+==================================================
+
+Completely redesign it.
+
+Include
+
+Drag and Drop ZIP Upload
+
+Browse Files button
+
+GitHub Repository URL input
+
+Language selector
+
+Python (enabled)
+
+C++ (Coming Soon)
+
+Java (Coming Soon)
+
+JavaScript (Coming Soon)
+
+Analyze button
+
+Validation messages
+
+Progress indicator
+
+==================================================
+LOADING EXPERIENCE
+==================================================
+
+Create a beautiful loading page.
+
+Animated progress bar.
+
+Current stage.
+
+Spinner.
+
+Stages:
+
+Scanning files
+
+Parsing AST
+
+Calculating Complexity
+
+Calculating Maintainability
+
+Finding Duplicate Code
+
+Generating Report
+
+==================================================
+RESULTS DASHBOARD
+==================================================
+
+Completely redesign.
+
+Top section
+
+Overall Quality Score
+
+Circular progress gauge
+
+Quality Rating
+
+Excellent
+
+Good
+
+Needs Improvement
+
+Metric cards
+
+Cyclomatic Complexity
+
+Maintainability
+
+Long Functions
+
+Duplicate Functions
+
+Each card should have
+
+Icon
+
+Value
+
+Color
+
+Description
+
+Hover animation
+
+==================================================
+CHARTS
+==================================================
+
+Create modern charts.
+
+Complexity
+
+Bar chart
+
+Maintainability
+
+Pie chart
+
+Overall score
+
+Gauge chart
+
+Duplicate functions
+
+Table
+
+Long functions
+
+Table
+
+==================================================
+FUNCTION DETAILS
+==================================================
+
+Every detected function should be expandable.
+
+Show
+
+Function name
+
+File path
+
+Line count
+
+Cyclomatic Complexity
+
+Maintainability
+
+Duplicate status
+
+Future AI recommendation placeholder
+
+==================================================
+REPORTS
+==================================================
+
+Allow downloading
+
+JSON report
+
+HTML report
+
+Prepare architecture for PDF export later.
+
+==================================================
+RESPONSIVE DESIGN
+==================================================
+
+Perfect support for
+
+Desktop
+
+Tablet
+
+Mobile
+
+==================================================
+ANIMATIONS
+==================================================
+
+Use Framer Motion.
+
+Fade
+
+Slide
+
+Scale
+
+Hover
+
+Page transitions
+
+Loading animations
+
+Avoid excessive animations.
+
+==================================================
+FOOTER
+==================================================
+
+Professional footer.
+
+Sections
+
+Documentation
+
+GitHub Repository
+
+License
+
+Author
+
+Future Roadmap
+
+==================================================
+BACKEND
+==================================================
+
+Connect everything to the existing FastAPI backend.
+
+Reuse existing analyzer modules.
+
+Do NOT duplicate logic.
+
+Return JSON from the backend.
+
+==================================================
+FUTURE READY
+==================================================
+
+Keep the architecture modular so the following can be added later:
+
+Authentication
+
+Saved Reports
+
+GitHub OAuth
+
+Repository History
+
+AI Code Suggestions
+
+Multiple Programming Languages
+
+PDF Export
+
+==================================================
+QUALITY
+==================================================
+
+Code should be production quality.
+
+Use reusable React components.
+
+Avoid duplicated code.
+
+Use TypeScript properly.
+
+Keep components modular.
+
+==================================================
+MOST IMPORTANT
+==================================================
+
+Do not rewrite the application.
+
+Improve it.
+
+Think like a senior frontend engineer working on a premium SaaS product.
+
+The final result should be polished enough to be proudly showcased on GitHub and in software engineering interviews.

@@ -7,25 +7,27 @@ interface Props {
   functions: FunctionResult[];
 }
 
-function barColor(complexity: number) {
-  if (complexity <= 3) return "#3FB950";
-  if (complexity <= 6) return "#D29922";
-  return "#F85149";
+function barColor(v: number) {
+  if (v <= 3) return "var(--success)";
+  if (v <= 6) return "var(--warning)";
+  return "var(--danger)";
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div
-        className="px-3 py-2 rounded-lg text-sm border"
-        style={{ background: "#161B22", borderColor: "#30363D", color: "#C9D1D9" }}
-      >
-        <p className="font-mono text-xs mb-1" style={{ color: "#8B949E" }}>{label}</p>
-        <p>Complexity: <span style={{ color: barColor(payload[0].value) }}>{payload[0].value}</span></p>
-      </div>
-    );
-  }
-  return null;
+  if (!active || !payload?.length) return null;
+  const v = payload[0].value as number;
+  return (
+    <div
+      className="px-3 py-2.5 rounded-lg text-sm border"
+      style={{ background: "var(--surface)", borderColor: "var(--border)", boxShadow: "var(--shadow-md)", color: "var(--text-body)" }}
+    >
+      <p className="font-mono text-xs mb-1" style={{ color: "var(--text-muted)" }}>{label}</p>
+      <p>
+        Complexity:{" "}
+        <span style={{ color: barColor(v), fontWeight: 600 }}>{v}</span>
+      </p>
+    </div>
+  );
 };
 
 export default function ComplexityChart({ functions }: Props) {
@@ -36,19 +38,23 @@ export default function ComplexityChart({ functions }: Props) {
 
   return (
     <ResponsiveContainer width="100%" height={260}>
-      <BarChart data={data} margin={{ top: 4, right: 4, bottom: 40, left: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#30363D" vertical={false} />
+      <BarChart data={data} margin={{ top: 4, right: 4, bottom: 44, left: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
         <XAxis
           dataKey="name"
-          tick={{ fill: "#8B949E", fontSize: 11, fontFamily: "JetBrains Mono" }}
-          angle={-35}
+          tick={{ fill: "var(--text-muted)", fontSize: 11, fontFamily: "JetBrains Mono, monospace" }}
+          angle={-38}
           textAnchor="end"
           interval={0}
-          stroke="#30363D"
+          stroke="var(--border)"
         />
-        <YAxis tick={{ fill: "#8B949E", fontSize: 11 }} stroke="#30363D" />
-        <Tooltip content={<CustomTooltip />} cursor={{ fill: "#58A6FF11" }} />
-        <Bar dataKey="complexity" radius={[4, 4, 0, 0]}>
+        <YAxis
+          tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+          stroke="var(--border)"
+          allowDecimals={false}
+        />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: "var(--primary-muted)" }} />
+        <Bar dataKey="complexity" radius={[4, 4, 0, 0]} maxBarSize={32}>
           {data.map((entry, i) => (
             <Cell key={i} fill={barColor(entry.complexity)} />
           ))}

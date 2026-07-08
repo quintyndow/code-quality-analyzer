@@ -6,13 +6,15 @@ interface Props {
   functions: FunctionResult[];
 }
 
+type Filter = "all" | "long" | "duplicate" | "complex";
+
 function ComplexityBadge({ value }: { value: number }) {
-  const color = value <= 3 ? "#3FB950" : value <= 6 ? "#D29922" : "#F85149";
+  const color = value <= 3 ? "var(--success)" : value <= 6 ? "var(--warning)" : "var(--danger)";
   const label = value <= 3 ? "Low" : value <= 6 ? "Medium" : "High";
   return (
     <span
       className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
-      style={{ background: `${color}18`, color }}
+      style={{ background: `color-mix(in srgb, ${color} 15%, transparent)`, color }}
     >
       {value} · {label}
     </span>
@@ -20,23 +22,27 @@ function ComplexityBadge({ value }: { value: number }) {
 }
 
 function MaintainabilityBar({ value }: { value: number }) {
-  const color = value >= 70 ? "#3FB950" : value >= 40 ? "#D29922" : "#F85149";
+  const color = value >= 70 ? "var(--success)" : value >= 40 ? "var(--warning)" : "var(--danger)";
   return (
     <div className="flex items-center gap-2">
-      <div className="w-24 h-1.5 rounded-full overflow-hidden" style={{ background: "#30363D" }}>
-        <div
-          className="h-full rounded-full transition-all"
-          style={{ width: `${value}%`, background: color }}
-        />
+      <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
+        <div className="h-full rounded-full" style={{ width: `${value}%`, background: color }} />
       </div>
-      <span className="text-xs tabular-nums" style={{ color: "#8B949E" }}>{value}</span>
+      <span className="text-xs tabular-nums" style={{ color: "var(--text-muted)" }}>{value}</span>
     </div>
   );
 }
 
+const FILTERS: { id: Filter; label: string }[] = [
+  { id: "all",       label: "All" },
+  { id: "complex",   label: "High Complexity" },
+  { id: "long",      label: "Long" },
+  { id: "duplicate", label: "Duplicates" },
+];
+
 export default function FunctionTable({ functions }: Props) {
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | "long" | "duplicate" | "complex">("all");
+  const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
 
   const filtered = functions.filter((f) => {
@@ -45,47 +51,47 @@ export default function FunctionTable({ functions }: Props) {
       (filter === "long" && f.is_long) ||
       (filter === "duplicate" && f.is_duplicate) ||
       (filter === "complex" && f.complexity > 5);
-    const matchesSearch =
-      search === "" ||
-      f.function.toLowerCase().includes(search.toLowerCase()) ||
-      f.file.toLowerCase().includes(search.toLowerCase());
+    const q = search.toLowerCase();
+    const matchesSearch = !q || f.function.toLowerCase().includes(q) || f.file.toLowerCase().includes(q);
     return matchesFilter && matchesSearch;
   });
 
-  const toggleExpand = (key: string) => setExpanded((prev) => (prev === key ? null : key));
-
-  const FILTERS = [
-    { id: "all", label: "All" },
-    { id: "long", label: "Long" },
-    { id: "duplicate", label: "Duplicates" },
-    { id: "complex", label: "High Complexity" },
-  ] as const;
+  const toggle = (key: string) => setExpanded((p) => (p === key ? null : key));
 
   return (
     <div>
       {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search functions..."
-          className="flex-1 px-3 py-2 rounded-lg text-sm outline-none"
-          style={{
-            background: "#161B22",
-            border: "1px solid #30363D",
-            color: "#C9D1D9",
-          }}
-        />
-        <div className="flex gap-1">
+        <div className="relative flex-1">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-muted)" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </span>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search functions or files…"
+            className="w-full pl-9 pr-4 py-2 rounded-lg text-sm outline-none transition-all"
+            style={{
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              color: "var(--text-body)",
+            }}
+            onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
+            onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+          />
+        </div>
+        <div className="flex gap-1.5 flex-wrap">
           {FILTERS.map((f) => (
             <button
               key={f.id}
               onClick={() => setFilter(f.id)}
               className="px-3 py-2 rounded-lg text-xs font-medium transition-all"
               style={{
-                background: filter === f.id ? "#58A6FF22" : "#161B22",
-                border: `1px solid ${filter === f.id ? "#58A6FF66" : "#30363D"}`,
-                color: filter === f.id ? "#58A6FF" : "#8B949E",
+                background: filter === f.id ? "var(--primary-muted)" : "var(--surface)",
+                border: `1px solid ${filter === f.id ? "var(--primary-dim)" : "var(--border)"}`,
+                color: filter === f.id ? "var(--primary)" : "var(--text-muted)",
               }}
             >
               {f.label}
@@ -95,14 +101,15 @@ export default function FunctionTable({ functions }: Props) {
       </div>
 
       {/* Table */}
-      <div className="rounded-xl overflow-hidden border" style={{ borderColor: "#30363D" }}>
+      <div className="rounded-xl overflow-hidden border" style={{ borderColor: "var(--border)" }}>
+        {/* Header */}
         <div
-          className="grid text-xs font-medium uppercase tracking-wider px-4 py-3"
+          className="hidden sm:grid px-4 py-3 text-xs font-semibold uppercase tracking-widest"
           style={{
-            gridTemplateColumns: "2fr 1fr 1fr 1fr 60px 60px",
-            background: "#161B22",
-            color: "#8B949E",
-            borderBottom: "1px solid #30363D",
+            gridTemplateColumns: "2fr 1fr 1fr 80px 60px 60px",
+            background: "var(--surface)",
+            color: "var(--text-muted)",
+            borderBottom: "1px solid var(--border)",
           }}
         >
           <div>Function</div>
@@ -114,48 +121,54 @@ export default function FunctionTable({ functions }: Props) {
         </div>
 
         {filtered.length === 0 ? (
-          <div className="px-4 py-8 text-center text-sm" style={{ color: "#8B949E", background: "#0D1117" }}>
+          <div
+            className="px-4 py-10 text-center text-sm"
+            style={{ color: "var(--text-muted)", background: "var(--bg)" }}
+          >
             No functions match the current filter.
           </div>
         ) : (
           filtered.map((fn, i) => {
-            const key = `${fn.file}-${fn.function}`;
+            const key = `${fn.file}::${fn.function}`;
             const isOpen = expanded === key;
             return (
-              <div key={key} style={{ borderBottom: i < filtered.length - 1 ? "1px solid #30363D" : undefined }}>
+              <div
+                key={key}
+                style={{
+                  borderBottom: i < filtered.length - 1 ? `1px solid var(--border)` : undefined,
+                }}
+              >
                 <button
-                  onClick={() => toggleExpand(key)}
-                  className="w-full grid px-4 py-3 text-left transition-colors hover:bg-white/5"
-                  style={{ gridTemplateColumns: "2fr 1fr 1fr 1fr 60px 60px", background: "#0D1117" }}
+                  onClick={() => toggle(key)}
+                  className="w-full text-left transition-colors hover:bg-white/5 focus-visible:outline-none"
+                  style={{ background: "var(--bg)" }}
                 >
-                  <div>
-                    <p className="text-sm font-mono font-medium" style={{ color: "#58A6FF" }}>
-                      {fn.function}
-                    </p>
-                    <p className="text-xs mt-0.5" style={{ color: "#8B949E" }}>{fn.file}</p>
-                  </div>
-                  <div className="flex items-center">
-                    <ComplexityBadge value={fn.complexity} />
-                  </div>
-                  <div className="flex items-center">
-                    <MaintainabilityBar value={fn.maintainability} />
-                  </div>
-                  <div className="flex items-center text-sm" style={{ color: "#C9D1D9" }}>
-                    {fn.line_count || "—"}
-                  </div>
-                  <div className="flex items-center">
-                    {fn.is_long ? (
-                      <span className="w-2 h-2 rounded-full" style={{ background: "#D29922" }} />
-                    ) : (
-                      <span className="text-xs" style={{ color: "#30363D" }}>—</span>
-                    )}
-                  </div>
-                  <div className="flex items-center">
-                    {fn.is_duplicate ? (
-                      <span className="w-2 h-2 rounded-full" style={{ background: "#F85149" }} />
-                    ) : (
-                      <span className="text-xs" style={{ color: "#30363D" }}>—</span>
-                    )}
+                  <div className="px-4 py-3 flex flex-col sm:grid gap-2 sm:gap-0" style={{ gridTemplateColumns: "2fr 1fr 1fr 80px 60px 60px" }}>
+                    <div>
+                      <p className="text-sm font-mono font-medium" style={{ color: "var(--primary)" }}>
+                        {fn.function}
+                      </p>
+                      <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{fn.file}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <ComplexityBadge value={fn.complexity} />
+                    </div>
+                    <div className="flex items-center">
+                      <MaintainabilityBar value={fn.maintainability} />
+                    </div>
+                    <div className="flex items-center text-sm" style={{ color: "var(--text-body)" }}>
+                      {fn.line_count || <span style={{ color: "var(--border)" }}>—</span>}
+                    </div>
+                    <div className="flex items-center">
+                      {fn.is_long
+                        ? <span className="w-2 h-2 rounded-full" style={{ background: "var(--warning)" }} />
+                        : <span className="text-xs" style={{ color: "var(--border)" }}>—</span>}
+                    </div>
+                    <div className="flex items-center">
+                      {fn.is_duplicate
+                        ? <span className="w-2 h-2 rounded-full" style={{ background: "var(--danger)" }} />
+                        : <span className="text-xs" style={{ color: "var(--border)" }}>—</span>}
+                    </div>
                   </div>
                 </button>
 
@@ -169,26 +182,33 @@ export default function FunctionTable({ functions }: Props) {
                       className="overflow-hidden"
                     >
                       <div
-                        className="px-6 py-4 grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm border-t"
-                        style={{ background: "#161B22", borderColor: "#30363D" }}
+                        className="px-6 py-5 border-t"
+                        style={{ background: "var(--surface)", borderColor: "var(--border)" }}
                       >
-                        <Detail label="File" value={fn.file} mono />
-                        <Detail label="Function" value={fn.function} mono />
-                        <Detail label="Cyclomatic Complexity" value={fn.complexity} />
-                        <Detail label="Maintainability Score" value={fn.maintainability} />
-                        <Detail label="Line Count" value={fn.line_count || "N/A"} />
-                        <Detail label="Duplicate" value={fn.is_duplicate ? "Yes" : "No"} />
-                        <div className="col-span-2 sm:col-span-3">
-                          <p className="text-xs mb-1" style={{ color: "#8B949E" }}>Recommendation</p>
-                          <p className="text-xs" style={{ color: "#C9D1D9" }}>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 mb-4">
+                          <Detail label="File"               value={fn.file}              mono />
+                          <Detail label="Function"           value={fn.function}          mono />
+                          <Detail label="Complexity"         value={fn.complexity} />
+                          <Detail label="Maintainability"    value={fn.maintainability} />
+                          <Detail label="Line Count"         value={fn.line_count || "N/A"} />
+                          <Detail label="Duplicate"          value={fn.is_duplicate ? "Yes" : "No"} />
+                        </div>
+                        {/* AI placeholder */}
+                        <div
+                          className="rounded-lg p-3 text-xs"
+                          style={{ background: "var(--primary-muted)", border: "1px solid var(--primary-dim)", color: "var(--primary)" }}
+                        >
+                          <p className="font-semibold mb-1">Recommendation</p>
+                          <p style={{ color: "var(--text-body)" }}>
                             {fn.complexity > 6
-                              ? "⚠ High complexity — consider breaking this function into smaller units."
+                              ? "⚠ High complexity — consider breaking this function into smaller, single-purpose units."
                               : fn.is_long
-                              ? "⚠ Function exceeds 50 lines — refactor for readability."
+                              ? "⚠ Function exceeds 50 lines — extract logical sections into helper functions."
                               : fn.is_duplicate
-                              ? "⚠ Duplicate detected — extract to a shared utility function."
-                              : "✓ This function looks healthy."}
+                              ? "⚠ Duplicate logic detected — extract to a shared utility to eliminate redundancy."
+                              : "✓ This function looks healthy. No immediate action required."}
                           </p>
+                          <p className="mt-2 opacity-60">AI-powered suggestions · Coming soon</p>
                         </div>
                       </div>
                     </motion.div>
@@ -199,8 +219,9 @@ export default function FunctionTable({ functions }: Props) {
           })
         )}
       </div>
-      <p className="text-xs mt-2 text-right" style={{ color: "#8B949E" }}>
-        Showing {filtered.length} of {functions.length} functions · Click a row to expand
+
+      <p className="text-xs mt-2 text-right" style={{ color: "var(--text-muted)" }}>
+        {filtered.length} of {functions.length} functions · Click a row to expand
       </p>
     </div>
   );
@@ -209,11 +230,8 @@ export default function FunctionTable({ functions }: Props) {
 function Detail({ label, value, mono }: { label: string; value: string | number; mono?: boolean }) {
   return (
     <div>
-      <p className="text-xs mb-0.5" style={{ color: "#8B949E" }}>{label}</p>
-      <p
-        className={`text-sm ${mono ? "font-mono" : "font-medium"}`}
-        style={{ color: "#E6EDF3" }}
-      >
+      <p className="text-xs mb-0.5" style={{ color: "var(--text-muted)" }}>{label}</p>
+      <p className={`text-sm font-medium ${mono ? "font-mono" : ""}`} style={{ color: "var(--text-primary)" }}>
         {String(value)}
       </p>
     </div>

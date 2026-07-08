@@ -10,31 +10,43 @@ interface Props {
   index?: number;
 }
 
-export default function MetricCard({ title, value, subtitle, icon, color = "#58A6FF", index = 0 }: Props) {
+export default function MetricCard({
+  title,
+  value,
+  subtitle,
+  icon,
+  color = "var(--primary)",
+  index = 0,
+}: Props) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.08, duration: 0.4 }}
-      className="rounded-xl p-5 border"
-      style={{ background: "#161B22", borderColor: "#30363D" }}
+      transition={{ delay: index * 0.07, duration: 0.4, ease: "easeOut" }}
+      whileHover={{ y: -2, transition: { duration: 0.15 } }}
+      className="rounded-xl p-5 border cursor-default"
+      style={{
+        background: "var(--surface)",
+        borderColor: "var(--border)",
+        boxShadow: "var(--shadow-sm)",
+      }}
     >
-      <div className="flex items-start justify-between mb-3">
-        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: "#8B949E" }}>
+      <div className="flex items-start justify-between mb-4">
+        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
           {title}
         </p>
         <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ background: `${color}18`, color }}
+          className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+          style={{ background: `color-mix(in srgb, ${color} 15%, transparent)`, color }}
         >
           {icon}
         </div>
       </div>
-      <p className="text-3xl font-bold mb-1" style={{ color: "#E6EDF3" }}>
+      <p className="text-3xl font-bold tracking-tight mb-1" style={{ color: "var(--text-primary)" }}>
         {value}
       </p>
       {subtitle && (
-        <p className="text-xs" style={{ color: "#8B949E" }}>
+        <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
           {subtitle}
         </p>
       )}

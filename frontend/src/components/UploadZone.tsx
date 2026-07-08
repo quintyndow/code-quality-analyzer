@@ -10,25 +10,27 @@ export default function UploadZone({ onFile, disabled }: Props) {
   const [dragging, setDragging] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
 
+  const accept = useCallback(
+    (file: File) => {
+      setFileName(file.name);
+      onFile(file);
+    },
+    [onFile]
+  );
+
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
       setDragging(false);
       const file = e.dataTransfer.files[0];
-      if (file?.name.endsWith(".zip")) {
-        setFileName(file.name);
-        onFile(file);
-      }
+      if (file?.name.endsWith(".zip")) accept(file);
     },
-    [onFile]
+    [accept]
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setFileName(file.name);
-      onFile(file);
-    }
+    if (file) accept(file);
   };
 
   return (
@@ -37,9 +39,12 @@ export default function UploadZone({ onFile, disabled }: Props) {
       onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
       onDrop={handleDrop}
-      animate={{ borderColor: dragging ? "#58A6FF" : fileName ? "#3FB950" : "#30363D" }}
-      className="flex flex-col items-center justify-center gap-3 w-full py-10 px-6 rounded-xl border-2 border-dashed cursor-pointer transition-colors"
-      style={{ background: dragging ? "#58A6FF08" : "#161B22" }}
+      animate={{
+        borderColor: dragging ? "var(--primary)" : fileName ? "var(--success)" : "var(--border)",
+        background: dragging ? "var(--primary-muted)" : "var(--surface)",
+      }}
+      transition={{ duration: 0.15 }}
+      className="flex flex-col items-center justify-center gap-4 w-full py-12 px-6 rounded-xl border-2 border-dashed cursor-pointer"
     >
       <input
         id="zip-upload"
@@ -49,33 +54,45 @@ export default function UploadZone({ onFile, disabled }: Props) {
         onChange={handleChange}
         disabled={disabled}
       />
-      <div
+
+      <motion.div
+        animate={{ scale: dragging ? 1.08 : 1 }}
+        transition={{ duration: 0.15 }}
         className="w-12 h-12 rounded-xl flex items-center justify-center"
-        style={{ background: fileName ? "#3FB95018" : "#58A6FF18", color: fileName ? "#3FB950" : "#58A6FF" }}
+        style={{
+          background: fileName ? "var(--success-muted)" : "var(--primary-muted)",
+          color: fileName ? "var(--success)" : "var(--primary)",
+        }}
       >
         {fileName ? (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
           </svg>
         ) : (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
           </svg>
         )}
-      </div>
+      </motion.div>
+
       {fileName ? (
         <div className="text-center">
-          <p className="text-sm font-medium font-mono" style={{ color: "#3FB950" }}>{fileName}</p>
-          <p className="text-xs mt-1" style={{ color: "#8B949E" }}>Click to replace</p>
+          <p className="text-sm font-semibold font-mono" style={{ color: "var(--success)" }}>
+            {fileName}
+          </p>
+          <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+            Click to replace file
+          </p>
         </div>
       ) : (
         <div className="text-center">
-          <p className="text-sm font-medium" style={{ color: "#C9D1D9" }}>
-            Drop your ZIP file here
+          <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+            {dragging ? "Drop to upload" : "Drop your ZIP file here"}
           </p>
-          <p className="text-xs mt-1" style={{ color: "#8B949E" }}>
-            or click to browse · .zip files only
+          <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+            or{" "}
+            <span style={{ color: "var(--primary)" }}>browse files</span>
+            {" "}· .zip archives only
           </p>
         </div>
       )}
