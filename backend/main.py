@@ -10,9 +10,10 @@ from typing import Optional
 # Add root to path so we can import analyzer
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+from fastapi import FastAPI, APIRouter, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse, Response, FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from analyzer.scanner import scan_project
 from analyzer.parser import parse_files
@@ -31,13 +32,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# All API routes are grouped under /api so the single production server
+# can handle both the API and the React SPA without a separate proxy.
+router = APIRouter(prefix="/api")
 
-@app.get("/health")
+
+@router.get("/health")
 def health():
     return {"status": "ok", "version": "1.0.0"}
 
 
-@app.get("/languages")
+@router.get("/languages")
 def languages():
     return {
         "languages": [
@@ -159,7 +164,7 @@ def run_analysis(project_path: str) -> dict:
     }
 
 
-@app.post("/analyze")
+@router.post("/analyze")
 async def analyze(
     file: Optional[UploadFile] = File(None),
     github_url: Optional[str] = Form(None),
@@ -248,7 +253,7 @@ async def analyze(
         shutil.rmtree(temp_dir, ignore_errors=True)
 
 
-@app.post("/report/html")
+@router.post("/report/html")
 async def report_html(
     file: Optional[UploadFile] = File(None),
     github_url: Optional[str] = Form(None),
@@ -302,7 +307,7 @@ th{{background:#161B22}}
     )
 
 
-@app.post("/report/json")
+@router.post("/report/json")
 async def report_json(
     file: Optional[UploadFile] = File(None),
     github_url: Optional[str] = Form(None),
@@ -315,3 +320,28 @@ async def report_json(
         media_type="application/json",
         headers={"Content-Disposition": "attachment; filename=report.json"},
     )
+
+
+# ---------------------------------------------------------------------------
+# Register API router — all endpoints are now reachable at /api/*
+# ---------------------------------------------------------------------------
+app.include_router(router)
+
+# ---------------------------------------------------------------------------
+# Static file serving — production only (frontend/dist must be built first).
+# In development the Vite dev server serves the frontend instead.
+# ---------------------------------------------------------------------------
+_DIST = Path(__file__).parent.parent / "frontend" / "dist"
+
+if _DIST.exists():
+    # Serve compiled JS/CSS/image assets
+    app.mount("/assets", StaticFiles(directory=str(_DIST / "assets")), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_spa(full_path: str):
+        """Return the requested file from the build output, or index.html for
+        any path that doesn't correspond to a real file (SPA client-side routing)."""
+        target = _DIST / full_path
+        if target.is_file():
+            return FileResponse(str(target))
+        return FileResponse(str(_DIST / "index.html"))
